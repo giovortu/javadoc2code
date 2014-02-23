@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="javadoc2code"
+            name="Java Tools">
+      </category>
+      <wizard
+            category="javadoc2code"
+            class="javadoc2code.wizards.Javadoc2codeWizard"
+            icon="icons/sample.gif"
+            id="javadoc2code.wizards.Javadoc2codeWizard"
+            name="Create Class from Javadoc"
+            project="false">
+      </wizard>
+   </extension>
+
+</plugin>
