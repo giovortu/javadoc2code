@@ -29,14 +29,19 @@ public class JavadocConverter {
 		StringBuilder outputFile = new StringBuilder();
 		
 		// Write classname
-		outputFile.append(getClassDeclaration(doc));
+		String classDeclaration = getClassDeclaration(doc);
+		outputFile.append(classDeclaration);
 		outputFile.append(" {\n\n");
 		
-		// Write constructor
-		outputFile.append(getMethods(doc, "constructor_detail"));
+		boolean isInterface = classDeclaration.contains(" interface ");
+		
+		if(!isInterface){
+			// Write constructor
+			outputFile.append(getMethods(doc, "constructor_detail", isInterface));
+		}
 		
 		// Write methods 
-		outputFile.append(getMethods(doc, "method_detail"));
+		outputFile.append(getMethods(doc, "method_detail", isInterface));
 		
 		outputFile.append("}\n");
 		return outputFile.toString();
@@ -60,41 +65,45 @@ public class JavadocConverter {
 		return declarationString.toString();
 	}
 	
-	private static String getMethods(Document htmlDoc, String category)
+	private static String getMethods(Document htmlDoc, String category, boolean isInterface)
 	{
 		StringBuilder methodString = new StringBuilder();
-		Element methodDetail = htmlDoc.select("a[name=" + category + "]").first();
-		Elements methods = methodDetail.siblingElements().select("li");
+		Elements categoryElements =  htmlDoc.select("a[name=" + category + "]");
 		
-		for (Element method : methods)
-		{
-			methodString.append("\t/**\n");
-			String[] methodDescription = Utils.breakupString(method.select("div").text(), LINE_LENGTH);
-			for (String s : methodDescription){
-				methodString.append("\t * " + s  + "\n");
-			}
-			for (Element param : method.select("dl dd"))
-			{	
-				if (param.text().contains("-") && (param.childNodeSize() > 0)){
-					String[] paramInfo = param.text().split("-", 2);
-					methodString.append("\t * @param \t" 
-							+ paramInfo[0].trim() + "\t " 
-							+ paramInfo[1].trim() + "\n");
-				} else {
-					if(param.previousElementSibling().text().equals("Returns:")){
-						methodString.append("\t * @returns \t" 
-								+ param.text().trim() + "\n");
+		if (!categoryElements.isEmpty()){
+			Element methodDetail = categoryElements.first();
+			Elements methods = methodDetail.siblingElements().select("li");
+			
+			for (Element method : methods)
+			{
+				methodString.append("\t/**\n");
+				String[] methodDescription = Utils.breakupString(method.select("div").text(), LINE_LENGTH);
+				for (String s : methodDescription){
+					methodString.append("\t * " + s  + "\n");
+				}
+				for (Element param : method.select("dl dd"))
+				{	
+					if (param.text().contains("-") && (param.childNodeSize() > 0)){
+						String[] paramInfo = param.text().split("-", 2);
+						methodString.append("\t * @param \t" 
+								+ paramInfo[0].trim() + "\t " 
+								+ paramInfo[1].trim() + "\n");
+					} else {
+						if(param.previousElementSibling().text().equals("Returns:")){
+							methodString.append("\t * @returns \t" 
+									+ param.text().trim() + "\n");
+						}
 					}
 				}
-			}
-			methodString.append("\t */\n");
-			String methodDeclaration = method.select("pre").text();
-			methodString.append("\t" + methodDeclaration);
-			if (methodDeclaration.contains(" abstract ")){
-				methodString.append(";\n\n");
-			} else {
-				methodString.append(" {\n");
-				methodString.append("\n\t}\n\n");
+				methodString.append("\t */\n");
+				String methodDeclaration = method.select("pre").text();
+				methodString.append("\t" + methodDeclaration);
+				if (methodDeclaration.contains(" abstract ") || isInterface){
+					methodString.append(";\n\n");
+				} else {
+					methodString.append(" {\n");
+					methodString.append("\n\t}\n\n");
+				}
 			}
 		}
 		return methodString.toString();
