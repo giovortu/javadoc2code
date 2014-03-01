@@ -2,4 +2,5 @@
 <site>
    <feature url="features/javadoc2code.feature_1.0.0.2.jar" id="javadoc2code.feature" version="1.0.0.2"/>
    <feature url="features/javadoc2code.feature_1.0.0.3.jar" id="javadoc2code.feature" version="1.0.0.3"/>
+   <feature url="features/javadoc2code.feature_1.0.0.4.jar" id="javadoc2code.feature" version="1.0.0.4"/>
 </site>
