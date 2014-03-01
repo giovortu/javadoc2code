@@ -1,5 +1,6 @@
 package javadoc2code.wizards;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -85,6 +86,13 @@ public class Javadoc2WizardPage extends WizardPage {
 		urlText.setLayoutData(gd);
 		urlText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
+				try{
+					String baseName = FilenameUtils.getBaseName(urlText.getText());
+					fileText.setText(baseName + ".java"); 
+				} catch (Exception ex)
+				{
+					
+				}
 				dialogChanged();
 			}
 		});
