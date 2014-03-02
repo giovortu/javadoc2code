@@ -78,7 +78,7 @@ public class JavadocConverter {
 				String[] methodDescription = Utils.breakupString(
 						method.select("div").text(), LINE_LENGTH);
 				
-				// Grab the descriptionS of the method
+				// Grab the descriptions of the method
 				for (String s : methodDescription) {
 					methodString.append("\t * " + s + "\n");
 				}
@@ -111,13 +111,15 @@ public class JavadocConverter {
 					} else {
 						if (param.previousElementSibling().text()
 								.equals("Returns:")) {
-							methodString.append("\t * @returns \t"
+							methodString.append("\t * @return \t"
 									+ param.text().trim() + "\n");
 						}
 					}
 				}
 				methodString.append("\t */\n");
 				String methodDeclaration = method.select("pre").text();
+				// So Strings can just be Strings
+				methodDeclaration.replace("java.lang.", "");
 				methodString.append("\t" + methodDeclaration);
 				if (containsThrows)
 				{
