@@ -119,7 +119,7 @@ public class JavadocConverter {
 				methodString.append("\t */\n");
 				String methodDeclaration = method.select("pre").text();
 				// So Strings can just be Strings
-				methodDeclaration.replace("java.lang.", "");
+				methodDeclaration = methodDeclaration.replace("java.lang.", "");
 				methodString.append("\t" + methodDeclaration);
 				if (containsThrows)
 				{
