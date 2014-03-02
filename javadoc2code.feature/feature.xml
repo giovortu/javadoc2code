@@ -2,7 +2,7 @@
 <feature
       id="javadoc2code.feature"
       label="Javadoc2code Feature"
-      version="1.0.0.9"
+      version="1.0.1.0"
       provider-name="Mark Saunders">
 
    <description url="http://www.example.com/description">

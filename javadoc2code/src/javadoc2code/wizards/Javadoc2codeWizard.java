@@ -105,7 +105,7 @@ public class Javadoc2codeWizard extends Wizard implements INewWizard {
 		IContainer container = (IContainer) resource;
 		final IFile file = container.getFile(new Path(fileName));
 		try {
-			InputStream stream = openContentStream(javadocUrl);
+			InputStream stream = openContentStream(javadocUrl, fileName);
 			if (file.exists()) {
 				file.setContents(stream, true, true, monitor);
 			} else {
@@ -134,9 +134,21 @@ public class Javadoc2codeWizard extends Wizard implements INewWizard {
 	 * @throws IOException 
 	 */
 
-	private InputStream openContentStream(String javadocUrl) throws IOException {
-		String contents = JavadocConverter.convertJavadoc(javadocUrl);
-		return new ByteArrayInputStream(contents.getBytes());
+	private InputStream openContentStream(String javadocUrl, String filename) throws IOException {
+		StringBuilder contents = new StringBuilder();
+		contents.append("/*\n");
+		contents.append(" * " + filename + "\n");
+		contents.append(" * \n");
+		contents.append(" * Version:\n");
+		contents.append(" * $Id$\n");
+		contents.append(" *\n");
+		contents.append(" * Revisions:\n");
+		contents.append(" * $Log$\n");
+		contents.append(" * \n");
+		contents.append(" */\n\n");
+		
+		contents.append(JavadocConverter.convertJavadoc(javadocUrl));
+		return new ByteArrayInputStream(contents.toString().getBytes());
 	}
 
 	private void throwCoreException(String message) throws CoreException {
