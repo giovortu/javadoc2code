@@ -3,6 +3,7 @@ javadoc2code
 
 Tool to create classes from Javadoc
 
-Eclipse Update site:
+~~Eclipse Update site:~~
 
-https://raw.github.com/mscoolnerd/javadoc2code/master/javadoc2code.update/
+~~https://raw.github.com/mscoolnerd/javadoc2code/master/javadoc2code.update/~~
+
