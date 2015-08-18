@@ -8,9 +8,12 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.jface.operation.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 
@@ -89,34 +92,59 @@ public class Javadoc2codeWizard extends Wizard implements INewWizard {
 	 * the editor on the newly created file.
 	 */
 
-	private void doFinish(
-		String containerName,
-		String fileName,
-		String javadocUrl,
-		IProgressMonitor monitor)
-		throws CoreException {
-		// create a sample file
-		monitor.beginTask("Creating " + fileName, 2);
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IResource resource = root.findMember(new Path(containerName));
-		if (!resource.exists() || !(resource instanceof IContainer)) {
-			throwCoreException("Container \"" + containerName + "\" does not exist.");
-		}
-		IContainer container = (IContainer) resource;
-		final IFile file = container.getFile(new Path(fileName));
+	private void doFinish(String containerName,String fileName,String javadocUrl,IProgressMonitor monitor)	throws CoreException 
+	{
+
 		try {
-			InputStream stream = openContentStream(javadocUrl, fileName);
-			if (file.exists()) {
-				file.setContents(stream, true, true, monitor);
-			} else {
-				file.create(stream, true, monitor);
+			
+			List<String> addresses = AllClassesParser.convertJavadoc(javadocUrl);
+
+			
+			for( String currentLine : addresses ) {
+			
+				String newUrl = "http://localhost/" + currentLine;
+
+		        String baseName = FilenameUtils.getBaseName(newUrl) + ".java";
+
+		        System.out.println("Converting : " + baseName);
+				
+			
+			// create a sample file
+			monitor.beginTask("Creating " + fileName, 2);
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IResource resource = root.findMember(new Path(containerName));
+			if (!resource.exists() || !(resource instanceof IContainer))
+			{
+				throwCoreException("Container \"" + containerName + "\" does not exist.");
 			}
-			stream.close();
-		} catch (IOException e) {
+			IContainer container = (IContainer) resource;
+			final IFile file = container.getFile(new Path(baseName));
+			try
+			{
+				InputStream stream = openContentStream(newUrl, baseName);
+				if (file.exists())
+				{
+					file.setContents(stream, true, true, monitor);
+				} else 
+				{
+					file.create(stream, true, monitor);
+				}
+				stream.close();
+			} 
+			catch (IOException e)
+			{
+			}
+		
+			} //for
+		
 		}
+		catch (IOException e)
+		{
+		}
+		
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
-		getShell().getDisplay().asyncExec(new Runnable() {
+		/*getShell().getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				IWorkbenchPage page =
 					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -125,8 +153,8 @@ public class Javadoc2codeWizard extends Wizard implements INewWizard {
 				} catch (PartInitException e) {
 				}
 			}
-		});
-		monitor.worked(1);
+		});*/
+		//monitor.worked(1);
 	}
 	
 	/**
